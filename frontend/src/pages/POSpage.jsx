@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import MainLayout from '../layouts/MainLayout'
 import axios from "axios"
 import { toast } from 'react-toastify';
+import { ComponentToPrint } from '../components/ComponentToPrint';
+import { useReactToPrint } from 'react-to-print';
 
 function POSpage() {
 
@@ -64,6 +66,12 @@ function POSpage() {
         const newCart = cart.filter(cartItem => cartItem.id !== product.id);
         setCart(newCart);               
       }
+
+      const componentRef = useRef();
+
+      const handleReactToPrint = useReactToPrint({
+        content: () => componentRef.current,
+      });
     
       useEffect(() => {
         fetchProducts();
@@ -99,6 +107,10 @@ function POSpage() {
                 
               </div>
               <div className='col-lg-4'>
+                <div style={{display: "none" }}>
+                  <ComponentToPrint cart={cart} totalAmount={totalAmount} ref={componentRef} />
+
+                </div>
                 <div className='table-responsive bg-dark'>
                   <table className='table table-responsive table-dark table-hover'>
                     <thead>
@@ -129,6 +141,20 @@ function POSpage() {
                   </table>
                   <h2 className='px-2 text-white'>Total Amount: €{totalAmount}</h2>
                 </div>
+
+                <div className='mt-3'>
+                  { totalAmount !== 0 ? <div>
+                    <button className='btn btn-primary' onClick={handleReactToPrint}>
+                      Pay Now
+                    </button>
+
+                  </div> : 'Please add a product to the cart'
+
+                  }
+                </div>
+
+
+
               </div>
             </div>
         </MainLayout>
