@@ -61,11 +61,26 @@ function POSpage() {
           }
       }
 
-      const removeProduct = async(product) => {
+      /*const removeProduct = async(product) => {
         // filter the product out of the cart
         const newCart = cart.filter(cartItem => cartItem.id !== product.id);
         setCart(newCart);               
-      }
+      }*/
+
+      const removeProduct = (product) => {
+        if (product.quantity > 1) {
+          const newCart = cart.map(cartItem => {
+            if (cartItem.id === product.id) {
+              return { ...cartItem, quantity: cartItem.quantity - 1 };
+            }
+            return cartItem;
+          });
+          setCart(newCart);
+        } else {
+          const newCart = cart.filter(cartItem => cartItem.id !== product.id);
+          setCart(newCart);
+        }
+      };
 
       const componentRef = useRef();
 
@@ -77,10 +92,18 @@ function POSpage() {
         fetchProducts();
       },[]);
 
-      useEffect(() => {
+      /*useEffect(() => {
         let newTotalAmount = 0;
         cart.forEach(icart => {
           newTotalAmount = newTotalAmount + parseInt(icart.totalAmount);
+        })
+        setTotalAmount(newTotalAmount);
+      }, [cart])*/
+
+      useEffect(() => {
+        let newTotalAmount = 0;
+        cart.forEach(icart => {
+          newTotalAmount += icart.quantity * icart.price;
         })
         setTotalAmount(newTotalAmount);
       }, [cart])
